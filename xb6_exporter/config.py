@@ -1,4 +1,4 @@
-"""Exporter configuration: gateway credentials (from .credentials) plus exporter knobs (env vars)."""
+"""Exporter configuration: gateway credentials (env vars, falling back to .credentials) plus exporter knobs (env vars)."""
 from __future__ import annotations
 
 import os
@@ -20,14 +20,14 @@ class Config:
 
 
 def load_config() -> Config:
-    creds = dotenv_values(CREDENTIALS_PATH)
-    gwaddr = creds.get("GWADDR")
-    gwuser = creds.get("GWUSER")
-    gwpassword = creds.get("GWPASSWORD")
+    creds = dotenv_values(CREDENTIALS_PATH) if CREDENTIALS_PATH.is_file() else {}
+    gwaddr = os.environ.get("GWADDR") or creds.get("GWADDR")
+    gwuser = os.environ.get("GWUSER") or creds.get("GWUSER")
+    gwpassword = os.environ.get("GWPASSWORD") or creds.get("GWPASSWORD")
     if not gwaddr or not gwuser or not gwpassword:
         raise RuntimeError(
-            f"missing GWADDR/GWUSER/GWPASSWORD in {CREDENTIALS_PATH}; "
-            "copy .credentials_template to .credentials and fill it in"
+            "missing GWADDR/GWUSER/GWPASSWORD; set them as environment variables "
+            f"or in {CREDENTIALS_PATH} (copy .credentials_template to .credentials and fill it in)"
         )
 
     return Config(

@@ -30,10 +30,15 @@ python -m xb6_exporter.main
 curl localhost:9938/metrics
 ```
 
-Config is via environment variables:
+Credentials can come from either a `.credentials` file (loaded automatically if present)
+or environment variables, which take precedence — handy for Docker `--env-file`, systemd
+`EnvironmentFile=`, etc.
 
 | Variable | Default | Meaning |
 |---|---|---|
+| `GWADDR` | *(required)* | Gateway management IP/hostname, e.g. `10.0.0.1` |
+| `GWUSER` | *(required)* | Gateway web admin username |
+| `GWPASSWORD` | *(required)* | Gateway web admin password |
 | `EXPORTER_BIND` | `::` | Address the `/metrics` HTTP server binds to (`::` listens on both IPv4 and IPv6) |
 | `EXPORTER_PORT` | `9938` | Port the `/metrics` HTTP server listens on |
 
